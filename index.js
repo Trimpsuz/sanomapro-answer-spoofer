@@ -58,8 +58,6 @@ function createMatchPairs(leftArray, rightArray) {
       beforeResponse: async (response) => {
         let json = await response.body.getJson();
 
-        if (json.score == json.maxScore) return;
-
         if (json.document.contentType == 'ClozeCombiInteraction') {
           let answers = new Map([['incorrect', []]]);
 
@@ -160,8 +158,6 @@ function createMatchPairs(leftArray, rightArray) {
 
       beforeResponse: async (response) => {
         let json = await response.body.getJson();
-
-        if (json.score == json.maxScore) return;
 
         if (json.documents[0].contentType == 'ChoiceInteractionXopus') {
           for (const document of json.documents) {
