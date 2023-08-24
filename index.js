@@ -2,6 +2,25 @@ const mockttp = require('mockttp');
 const fs = require('fs');
 const axios = require('axios');
 
+function createMatchPairs(leftArray, rightArray) {
+  const minLength = Math.min(leftArray.length, rightArray.length);
+  const matchPairs = [];
+
+  for (let i = 0; i < minLength; i++) {
+    const leftId = leftArray[i].id;
+    const rightId = rightArray[i].id;
+
+    const matchPair = {
+      leftMatchId: leftId,
+      rightMatchId: rightId,
+    };
+
+    matchPairs.push(matchPair);
+  }
+
+  return matchPairs;
+}
+
 (async () => {
   if (!fs.existsSync('./ssl/key.pem') || !fs.existsSync('./ssl/cert.pem')) {
     const { key, cert } = await mockttp.generateCACertificate();
@@ -21,6 +40,7 @@ const axios = require('axios');
   });
 
   let ClozeCombiInteractionReq;
+  let MatchSingleResponseInteractionReq;
   server
     .forPost('/api/content/exercise/submit')
     .forHostname('kampus.sanomapro.fi')
@@ -30,11 +50,15 @@ const axios = require('axios');
 
         if (json.document.contentType == 'ClozeCombiInteraction') {
           ClozeCombiInteractionReq = request;
+        } else if (json.document.contentType == 'MatchSingleResponseInteraction') {
+          MatchSingleResponseInteractionReq = request;
         }
       },
 
       beforeResponse: async (response) => {
         let json = await response.body.getJson();
+
+        if (json.score == json.maxScore) return;
 
         if (json.document.contentType == 'ClozeCombiInteraction') {
           let answers = new Map([['incorrect', []]]);
@@ -86,6 +110,22 @@ const axios = require('axios');
           return {
             body: JSON.stringify(json),
           };
+        } else if (json.document.contentType == 'MatchSingleResponseInteraction') {
+          if (json.document.itemBody.find((item) => item.interaction).interaction.selectedMatches) {
+            const postbody = await MatchSingleResponseInteractionReq.body.getJson();
+            delete MatchSingleResponseInteractionReq.headers['content-length'];
+
+            postbody.document.itemBody.find((item) => item.interaction).interaction.selectedMatches = createMatchPairs(
+              json.document.itemBody.find((item) => item.interaction).interaction.matchSetLeft,
+              json.document.itemBody.find((item) => item.interaction).interaction.matchSetRight
+            );
+
+            const res = (await axios.post(MatchSingleResponseInteractionReq.url, postbody, { headers: MatchSingleResponseInteractionReq.headers })).data;
+
+            return {
+              body: JSON.stringify(res),
+            };
+          }
         }
       },
     });
@@ -114,11 +154,14 @@ const axios = require('axios');
             body: JSON.stringify(json),
           };
         } else if (json.documents[0].contentType == 'MatchSingleResponseInteraction') {
+          MatchSingleResponseInteractionReq = request;
         }
       },
 
       beforeResponse: async (response) => {
         let json = await response.body.getJson();
+
+        if (json.score == json.maxScore) return;
 
         if (json.documents[0].contentType == 'ChoiceInteractionXopus') {
           for (const document of json.documents) {
@@ -156,6 +199,21 @@ const axios = require('axios');
             body: JSON.stringify(json),
           };
         } else if (json.documents[0].contentType == 'MatchSingleResponseInteraction') {
+          if (json.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches) {
+            const postbody = await MatchSingleResponseInteractionReq.body.getJson();
+            delete MatchSingleResponseInteractionReq.headers['content-length'];
+
+            postbody.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches = createMatchPairs(
+              json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetLeft,
+              json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetRight
+            );
+
+            const res = (await axios.post(MatchSingleResponseInteractionReq.url, postbody, { headers: MatchSingleResponseInteractionReq.headers })).data;
+
+            return {
+              body: JSON.stringify(res),
+            };
+          }
         }
       },
     });
