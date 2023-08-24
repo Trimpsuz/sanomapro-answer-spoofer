@@ -101,14 +101,19 @@ const axios = require('axios');
         if (json.documents[0].contentType == 'ChoiceInteractionXopus') {
           ChoiceInteractionXopusReq = request;
           for (const document of json.documents) {
-            for (const choice of document.itemBody[1].interaction.choices) {
-              choice.selected = true;
+            for (const itemBody of document.itemBody) {
+              if (itemBody.interaction) {
+                for (const choice of itemBody.interaction.choices) {
+                  choice.selected = true;
+                }
+              }
             }
           }
 
           return {
             body: JSON.stringify(json),
           };
+        } else if (json.documents[0].contentType == 'MatchSingleResponseInteraction') {
         }
       },
 
@@ -117,8 +122,12 @@ const axios = require('axios');
 
         if (json.documents[0].contentType == 'ChoiceInteractionXopus') {
           for (const document of json.documents) {
-            for (const choice of document.itemBody[1].interaction.choices) {
-              if (!choice.correct) choice.selected = false;
+            for (const itemBody of document.itemBody) {
+              if (itemBody.interaction) {
+                for (const choice of itemBody.interaction.choices) {
+                  if (!choice.correct) choice.selected = false;
+                }
+              }
             }
           }
 
@@ -128,10 +137,14 @@ const axios = require('axios');
           for (const document of postbody.documents) {
             const correspondingDocument = json.documents.find((doc) => doc.id === document.id);
             if (correspondingDocument) {
-              for (const choice of document.itemBody[1].interaction.choices) {
-                const correspondingChoice = correspondingDocument.itemBody[1].interaction.choices.find((c) => c.id === choice.id);
-                if (correspondingChoice) {
-                  choice.selected = correspondingChoice.selected;
+              for (const itemBody of document.itemBody) {
+                if (itemBody.interaction) {
+                  for (const choice of itemBody.interaction.choices) {
+                    const correspondingChoice = correspondingDocument.itemBody.find((item) => item.interaction).interaction.choices.find((c) => c.id === choice.id);
+                    if (correspondingChoice) {
+                      choice.selected = correspondingChoice.selected;
+                    }
+                  }
                 }
               }
             }
@@ -142,6 +155,7 @@ const axios = require('axios');
           return {
             body: JSON.stringify(json),
           };
+        } else if (json.documents[0].contentType == 'MatchSingleResponseInteraction') {
         }
       },
     });
