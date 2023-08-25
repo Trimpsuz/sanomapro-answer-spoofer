@@ -50,6 +50,21 @@ function createMatchPairs(leftArray, rightArray) {
 
         if (json.document.contentType == 'ClozeCombiInteraction') {
           ClozeCombiInteractionReq = request;
+
+          //If no answers are selected, try to select them
+          if (json.document.itemBody[1].interaction) {
+            for (clozeContent of json.document.itemBody[1].interaction.clozeContents) {
+              for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
+                if (clozeCombi.choices && !clozeCombi.selectedChoiceId) {
+                  clozeCombi.selectedChoiceId = clozeCombi.choices[0].id;
+                }
+              }
+            }
+          }
+
+          return {
+            body: JSON.stringify(json),
+          };
         } else if (json.document.contentType == 'MatchSingleResponseInteraction') {
           MatchSingleResponseInteractionReq = request;
         }
