@@ -109,6 +109,19 @@ function createMatchPairs(leftArray, rightArray) {
             body: JSON.stringify(json),
           };
         } else if (json.document.contentType == 'MatchSingleResponseInteraction') {
+          //If no matches are selected, try to select them
+          if (!json.document.itemBody.find((item) => item.interaction).interaction.selectedMatches) {
+            const matchesPost = await MatchSingleResponseInteractionReq.body.getJson();
+            delete MatchSingleResponseInteractionReq.headers['content-length'];
+
+            matchesPost.document.itemBody.find((item) => item.interaction).interaction.selectedMatches = createMatchPairs(
+              json.document.itemBody.find((item) => item.interaction).interaction.matchSetLeft,
+              json.document.itemBody.find((item) => item.interaction).interaction.matchSetRight
+            );
+
+            json = (await axios.post(MatchSingleResponseInteractionReq.url, matchesPost, { headers: MatchSingleResponseInteractionReq.headers })).data;
+          }
+
           if (json.document.itemBody.find((item) => item.interaction).interaction.selectedMatches) {
             const postbody = await MatchSingleResponseInteractionReq.body.getJson();
             delete MatchSingleResponseInteractionReq.headers['content-length'];
@@ -195,6 +208,19 @@ function createMatchPairs(leftArray, rightArray) {
             body: JSON.stringify(json),
           };
         } else if (json.documents[0].contentType == 'MatchSingleResponseInteraction') {
+          //If no matches are selected, try to select them
+          if (!json.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches) {
+            const matchesPost = await MatchSingleResponseInteractionReq.body.getJson();
+            delete MatchSingleResponseInteractionReq.headers['content-length'];
+
+            matchesPost.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches = createMatchPairs(
+              json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetLeft,
+              json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetRight
+            );
+
+            json = (await axios.post(MatchSingleResponseInteractionReq.url, matchesPost, { headers: MatchSingleResponseInteractionReq.headers })).data;
+          }
+
           if (json.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches) {
             const postbody = await MatchSingleResponseInteractionReq.body.getJson();
             delete MatchSingleResponseInteractionReq.headers['content-length'];
