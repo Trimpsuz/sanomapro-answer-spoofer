@@ -32,6 +32,13 @@ function createMatchPairs(leftArray, rightArray) {
     console.log('PLEASE INSTALL ./ssl/cert.pem INTO YOUR BROWSER! If asked, select "Trust this CA to identify webistes" or similar.');
   }
 
+  const version = await JSON.parse(await fs.readFileSync('package.json', 'utf-8')).version;
+  const latest = (await axios.get('https://raw.githubusercontent.com/Trimpsuz/sanomapro-answer-spoofer/master/package.json')).data.version;
+
+  if (version != latest) {
+    console.log('A new version of sanomapro-answer-spoofer is available. Please run "git pull" to update.');
+  }
+
   const server = mockttp.getLocal({
     https: {
       keyPath: './ssl/key.pem',
