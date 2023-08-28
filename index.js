@@ -37,8 +37,6 @@ function createMatchPairs(leftArray, rightArray) {
 
   if (version != latest) {
     console.log('A new version of sanomapro-answer-spoofer is available. Please run "git pull" to update.');
-    console.log(version);
-    console.log(latest);
   }
 
   const server = mockttp.getLocal({
