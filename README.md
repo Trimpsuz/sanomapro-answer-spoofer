@@ -59,6 +59,8 @@ Currently, the exercise types supported are:
   ![MatchSingleResponseInteraction](https://asiakaspalvelu.verkkokauppa.com/attachments/token/g02FctdGnxiJKMG0gJxuqowBR/?name=firefox_vFE3ECj338.png)
 - ChoiceInteractionXopus
   ![ChoiceInteractionXopus](https://asiakaspalvelu.verkkokauppa.com/attachments/token/pBFw4flTcESYPnIGt5LRqu1Be/?name=firefox_aT7AxVAI7a.png)
+- MatchInteraction
+  ![MatchInteraction](https://asiakaspalvelu.verkkokauppa.com/attachments/token/bPvijbI2FhSK65YlI3XWVPp13/?name=firefox_b5Nf299yRR.png)
 
 If some exercise types are missing, feel free to [contribute](#contributing).
 
