@@ -53,14 +53,13 @@ Sanoma Pro is an online learning platform that offers educational resources to s
 Currently, the exercise types supported are:
 
 - ClozeCombiInteraction
-  ![ClozeCombiInteraction 1](https://asiakaspalvelu.verkkokauppa.com/attachments/token/McTjZOF63auAXiFprHzUp0wLN/?name=firefox_WJ9FI9dsmx.png)
-  ![ClozeCombiInteraction 2](https://asiakaspalvelu.verkkokauppa.com/attachments/token/d5OIPoUvCt1LFp7DiDYBXqU5A/?name=firefox_YMxWNYivxR.png)
+  ![ClozeCombiInteraction](https://img.trimpsuz.dev/i/ma98d.png)
 - MatchSingleResponseInteraction
-  ![MatchSingleResponseInteraction](https://asiakaspalvelu.verkkokauppa.com/attachments/token/g02FctdGnxiJKMG0gJxuqowBR/?name=firefox_vFE3ECj338.png)
+  ![MatchSingleResponseInteraction](https://img.trimpsuz.dev/i/y9oos.png)
 - ChoiceInteractionXopus
-  ![ChoiceInteractionXopus](https://asiakaspalvelu.verkkokauppa.com/attachments/token/pBFw4flTcESYPnIGt5LRqu1Be/?name=firefox_aT7AxVAI7a.png)
+  ![ChoiceInteractionXopus](https://img.trimpsuz.dev/i/ro2ls.png)
 - MatchInteraction
-  ![MatchInteraction](https://asiakaspalvelu.verkkokauppa.com/attachments/token/bPvijbI2FhSK65YlI3XWVPp13/?name=firefox_b5Nf299yRR.png)
+  ![MatchInteraction](https://img.trimpsuz.dev/i/oyeeu.png)
 
 If some exercise types are missing, feel free to [contribute](#contributing).
 
