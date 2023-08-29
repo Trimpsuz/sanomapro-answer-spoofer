@@ -48,6 +48,7 @@ function createMatchPairs(leftArray, rightArray) {
 
   let ClozeCombiInteractionReq;
   let MatchSingleResponseInteractionReq;
+  let MatchInteractionReq;
   server
     .forPost('/api/content/exercise/submit')
     .forHostname('kampus.sanomapro.fi')
@@ -76,6 +77,24 @@ function createMatchPairs(leftArray, rightArray) {
           };
         } else if (json.document.contentType == 'MatchSingleResponseInteraction') {
           MatchSingleResponseInteractionReq = request;
+        } else if (json.document.contentType == 'MatchInteraction') {
+          MatchInteractionReq = request;
+          json.document.itemBody.find((item) => item.interaction).interaction.selectedMatches = [];
+
+          for (var i = 0; i < json.document.itemBody.find((item) => item.interaction).interaction.matchSetLeft.length; i++) {
+            for (var j = 0; j < json.document.itemBody.find((item) => item.interaction).interaction.matchSetRight.length; j++) {
+              json.document.itemBody
+                .find((item) => item.interaction)
+                .interaction.selectedMatches.push({
+                  leftMatchId: await json.document.itemBody.find((item) => item.interaction).interaction.matchSetLeft[i].id,
+                  rightMatchId: await json.document.itemBody.find((item) => item.interaction).interaction.matchSetRight[j].id,
+                });
+            }
+          }
+
+          return {
+            body: JSON.stringify(json),
+          };
         }
       },
 
@@ -165,6 +184,19 @@ function createMatchPairs(leftArray, rightArray) {
               body: JSON.stringify(res),
             };
           }
+        } else if (json.document.contentType == 'MatchInteraction') {
+          const postbody = await MatchInteractionReq.body.getJson();
+          delete MatchInteractionReq.headers['content-length'];
+
+          await (postbody.document.itemBody.find((item) => item.interaction).interaction.selectedMatches = json.document.itemBody
+            .find((item) => item.interaction)
+            .interaction.selectedMatches.filter((obj) => obj.correct !== false));
+
+          const res = (await axios.post(MatchInteractionReq.url, postbody, { headers: MatchInteractionReq.headers })).data;
+
+          return {
+            body: JSON.stringify(res),
+          };
         }
       },
     });
