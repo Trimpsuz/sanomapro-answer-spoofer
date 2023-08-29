@@ -61,9 +61,11 @@ function createMatchPairs(leftArray, rightArray) {
           //If no answers are selected, try to select them
           if (json.document.itemBody[1].interaction) {
             for (clozeContent of json.document.itemBody[1].interaction.clozeContents) {
-              for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
-                if (clozeCombi.choices && !clozeCombi.selectedChoiceId) {
-                  clozeCombi.selectedChoiceId = clozeCombi.choices[0].id;
+              if (clozeContent.paragraph.clozeCombi) {
+                for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
+                  if (clozeCombi.choices && !clozeCombi.selectedChoiceId) {
+                    clozeCombi.selectedChoiceId = clozeCombi.choices[0].id;
+                  }
                 }
               }
             }
@@ -88,21 +90,23 @@ function createMatchPairs(leftArray, rightArray) {
 
           while (json.score != json.maxScore) {
             for (clozeContent of json.document.itemBody[1].interaction.clozeContents) {
-              for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
-                if (clozeCombi.choices) {
-                  if (clozeCombi.correct) {
-                    answers.set(clozeCombi.id, { correct: clozeCombi.selectedChoiceId });
-                  } else {
-                    for (const choice of clozeCombi.choices) {
-                      if (choice.selected && !answers.get('incorrect').includes(choice.id)) {
-                        answers.get('incorrect').push(choice.id);
-                      } else if (!choice.selected && (!answers.get(clozeCombi.id) || !answers.get(clozeCombi.id).untested || !answers.get(clozeCombi.id).untested.includes(choice.id))) {
-                        if (!answers.get('incorrect').includes(choice.id) && (!answers.get(clozeCombi.id) || !answers.get(clozeCombi.id).untested)) {
-                          answers.set(clozeCombi.id, { untested: [choice.id] });
-                        } else if (!answers.get('incorrect').includes(choice.id) && answers.get(clozeCombi.id).untested.length >= clozeCombi.choices.length - 1) {
-                          answers.set(clozeCombi.id, { correct: clozeCombi.selectedChoiceId });
-                        } else if (!answers.get('incorrect').includes(choice.id)) {
-                          answers.get(clozeCombi.id).untested.push(choice.id);
+              if (clozeContent.paragraph.clozeCombi) {
+                for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
+                  if (clozeCombi.choices) {
+                    if (clozeCombi.correct) {
+                      answers.set(clozeCombi.id, { correct: clozeCombi.selectedChoiceId });
+                    } else {
+                      for (const choice of clozeCombi.choices) {
+                        if (choice.selected && !answers.get('incorrect').includes(choice.id)) {
+                          answers.get('incorrect').push(choice.id);
+                        } else if (!choice.selected && (!answers.get(clozeCombi.id) || !answers.get(clozeCombi.id).untested || !answers.get(clozeCombi.id).untested.includes(choice.id))) {
+                          if (!answers.get('incorrect').includes(choice.id) && (!answers.get(clozeCombi.id) || !answers.get(clozeCombi.id).untested)) {
+                            answers.set(clozeCombi.id, { untested: [choice.id] });
+                          } else if (!answers.get('incorrect').includes(choice.id) && answers.get(clozeCombi.id).untested.length >= clozeCombi.choices.length - 1) {
+                            answers.set(clozeCombi.id, { correct: clozeCombi.selectedChoiceId });
+                          } else if (!answers.get('incorrect').includes(choice.id)) {
+                            answers.get(clozeCombi.id).untested.push(choice.id);
+                          }
                         }
                       }
                     }
@@ -112,13 +116,15 @@ function createMatchPairs(leftArray, rightArray) {
             }
 
             for (clozeContent of postbody.document.itemBody[1].interaction.clozeContents) {
-              for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
-                if (answers.has(clozeCombi.id)) {
-                  if (answers.get(clozeCombi.id).correct) {
-                    clozeCombi.selectedChoiceId = answers.get(clozeCombi.id).correct;
-                  } else if (answers.get(clozeCombi.id).untested) {
-                    clozeCombi.selectedChoiceId = answers.get(clozeCombi.id).untested[0];
-                    answers.get(clozeCombi.id).untested = answers.get(clozeCombi.id).untested.filter((e) => e !== clozeCombi.selectedChoiceId);
+              if (clozeContent.paragraph.clozeCombi) {
+                for (const clozeCombi of clozeContent.paragraph.clozeCombi) {
+                  if (answers.has(clozeCombi.id)) {
+                    if (answers.get(clozeCombi.id).correct) {
+                      clozeCombi.selectedChoiceId = answers.get(clozeCombi.id).correct;
+                    } else if (answers.get(clozeCombi.id).untested) {
+                      clozeCombi.selectedChoiceId = answers.get(clozeCombi.id).untested[0];
+                      answers.get(clozeCombi.id).untested = answers.get(clozeCombi.id).untested.filter((e) => e !== clozeCombi.selectedChoiceId);
+                    }
                   }
                 }
               }
