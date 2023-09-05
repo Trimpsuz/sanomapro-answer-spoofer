@@ -247,6 +247,24 @@ function createMatchPairs(leftArray, rightArray) {
           return {
             body: JSON.stringify(json),
           };
+        } else if (json.documents[0].contentType == 'MatchInteraction') {
+          MatchInteractionReq = request;
+          json.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches = [];
+
+          for (var i = 0; i < json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetLeft.length; i++) {
+            for (var j = 0; j < json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetRight.length; j++) {
+              json.documents[0].itemBody
+                .find((item) => item.interaction)
+                .interaction.selectedMatches.push({
+                  leftMatchId: await json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetLeft[i].id,
+                  rightMatchId: await json.documents[0].itemBody.find((item) => item.interaction).interaction.matchSetRight[j].id,
+                });
+            }
+          }
+
+          return {
+            body: JSON.stringify(json),
+          };
         }
       },
 
@@ -374,6 +392,19 @@ function createMatchPairs(leftArray, rightArray) {
 
           return {
             body: JSON.stringify(json),
+          };
+        } else if (json.documents[0].contentType == 'MatchInteraction') {
+          const postbody = await MatchInteractionReq.body.getJson();
+          delete MatchInteractionReq.headers['content-length'];
+
+          await (postbody.documents[0].itemBody.find((item) => item.interaction).interaction.selectedMatches = json.documents[0].itemBody
+            .find((item) => item.interaction)
+            .interaction.selectedMatches.filter((obj) => obj.correct !== false));
+
+          const res = (await axios.post(MatchInteractionReq.url, postbody, { headers: MatchInteractionReq.headers })).data;
+
+          return {
+            body: JSON.stringify(res),
           };
         }
       },
