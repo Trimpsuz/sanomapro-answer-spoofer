@@ -10,7 +10,7 @@
   "author": "",
   "license": "GPLv3",
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "mockttp": "^3.9.1"
   }
 }
